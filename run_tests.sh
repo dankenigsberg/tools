@@ -15,7 +15,7 @@ if [ -z "${KUBECONFIG}" ]; then
 fi
 
       	
-cat EOF << > test_config.json
+cat << EOF > test_config.json
 { 
  "storageClassLocal": "hostpath-provisioner", 
  "storageClassHostPath": "hostpath-provisioner", 

@@ -32,8 +32,7 @@ make manifests
 rm -f _out/manifests/testing/cdi-*
 rm -f _out/manifests/testing/kubevirt-config.yaml
 sed -i "s/namespace: kubevirt/namespace: ${kubevirtNamespace}/g" _out/manifests/testing/*.yaml
-_out/tests/tests.test \ 
-	--cdi-namespace="openshift-cnv" \
+_out/tests/tests.test --cdi-namespace="openshift-cnv" \
 	--config=${PWD}/test_config.json \
 	--container-tag=v0.26.1 --container-tag-alt=v0.26.1_alt \
 	--deploy-testing-infra \

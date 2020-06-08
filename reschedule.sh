@@ -28,23 +28,6 @@ spec:
         node-role.kubernetes.io/worker: ""
 EOF
 
-cat << EOF > patch_taint_csv.yaml
-spec:
-  install:
-    spec:
-      deployments:
-      - name: virt-operator
-        spec:
-          template:
-            spec:
-              tolerations:
-              - effect: NoSchedule
-                key: node-role.kubernetes.io/master
-                operator: Equal
-              nodeSelector:
-                node-role.kubernetes.io/master: ""
-EOF
-
 #Patch deployments
 for dpl in virt-api virt-controller; do
 	oc patch deployment $dpl --patch "$(cat patch_taint.yaml)"
@@ -55,5 +38,14 @@ for dst in virt-handler; do
 	oc patch ds $dst --patch "$(cat patch_taint_worker.yaml)"
 done
 
+##Patch ClusterServiceVersion
 
+# get the CNV's CSV name
+CSV_NAME=$(oc get csv -n openshift-cnv -o custom-columns=:metadata.name)
+
+# get the virt-operator deployment sequence number in the CSV (subtracting 1 as it's starts from 0)
+VIRT_OPERATOR_SEQ_NUM=$(($(oc get csv $CSV_NAME -o=jsonpath='{range .spec.install.spec.deployments[*]}{.name}{"\n"}{end}' | grep -n "virt-operator" | cut -f1 -d:)-1))
+
+# patch the virt-operator deployment with the tolerations and node selector
+oc patch csv ${CSV_NAME} -n openshift-cnv --type=json -p "[{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/tolerations','value': [{'effect': 'NoSchedule','key': 'node-role.kubernetes.io/master','operator': 'Equal'}]},{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/nodeSelector','value': {'node-role.kubernetes.io/master': ''}}]"
 

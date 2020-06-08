@@ -45,8 +45,8 @@ done
 CSV_NAME=$(oc get csv -n openshift-cnv -o custom-columns=:metadata.name)
 
 # get the virt-operator deployment sequence number in the CSV (subtracting 1 as it's starts from 0)
-VIRT_OPERATOR_SEQ_NUM=$(($(oc get csv "$CSV_NAME" -o=jsonpath='{range .spec.install.spec.deployments[*]}{.name}{"\n"}{end}' | grep -n "virt-operator" | cut -f1 -d:)-1))
+VIRT_OPERATOR_SEQ_NUM=$(($(oc get csv $CSV_NAME -o=jsonpath='{range .spec.install.spec.deployments[*]}{.name}{"\n"}{end}' | grep -n "virt-operator" | cut -f1 -d:)-1))
 
 # patch the virt-operator deployment with the tolerations and node selector
-oc patch csv "${CSV_NAME}" -n openshift-cnv --type=json -p "[{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/tolerations','value': [{'effect': 'NoSchedule','key': 'node-role.kubernetes.io/master','operator': 'Equal'}]},{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/nodeSelector','value': {'node-role.kubernetes.io/master': ''}}]"
+oc patch csv ${CSV_NAME} -n openshift-cnv --type=json -p "[{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/tolerations','value': [{'effect': 'NoSchedule','key': 'node-role.kubernetes.io/master','operator': 'Equal'}]},{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/nodeSelector','value': {'node-role.kubernetes.io/master': ''}}]"
 

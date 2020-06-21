@@ -46,6 +46,5 @@ _out/tests/tests.test --cdi-namespace="openshift-cnv" \
 	--polarion-custom-plannedin=2_3 \
 	--polarion-execution=true \
 	--polarion-project-id=CNV \
-	--polarion-report-file=polarion_results.xml \
-	--test-tier=tier1
+	--polarion-report-file=polarion_results.xml
 

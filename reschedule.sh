@@ -46,7 +46,7 @@ patch_cluster_service_version() {
 	local VIRT_OPERATOR_SEQ_NUM
 	CSV_NAME=$(oc get csv -n "$CNV_INSTALLED_NS" -o custom-columns=:metadata.name)
 	VIRT_OPERATOR_SEQ_NUM=$(($(oc get csv "$CSV_NAME" -o=jsonpath='{range .spec.install.spec.deployments[*]}{.name}{"\n"}{end}' | grep -n "virt-operator" | cut -f1 -d:)-1))
-	oc patch csv "${CSV_NAME}" -n openshift-cnv --type=json -p "[{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/tolerations','value': [{'effect': 'NoSchedule','key': 'node-role.kubernetes.io/master','operator': 'Equal'}]},{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/nodeSelector','value': {'node-role.kubernetes.io/master': ''}}]"
+	oc patch csv "${CSV_NAME}" -n "$CNV_INSTALLED_NS" --type=json -p "[{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/tolerations','value': [{'effect': 'NoSchedule','key': 'node-role.kubernetes.io/master','operator': 'Equal'}]},{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/nodeSelector','value': {'node-role.kubernetes.io/master': ''}}]"
 }
 
 patch_ssp_deployments() {

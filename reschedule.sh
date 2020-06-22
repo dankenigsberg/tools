@@ -2,7 +2,7 @@
 
 set -e
 
-CNV_INSTALLED_NS={$CNV_INSTALLED_NS-:openshift-cnv}
+CNV_INSTALLED_NS=${CNV_INSTALLED_NS:-openshift-cnv}
 
 log() { echo "$@" >&2; }
 

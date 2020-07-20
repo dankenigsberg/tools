@@ -44,7 +44,7 @@ patch_cluster_service_version() {
 	log "Patching CNV Cluster Service Version for virt-operator deployment"
 	local CSV_NAME
 	local VIRT_OPERATOR_SEQ_NUM
-	CSV_NAME=$(oc get csv -n "$CNV_INSTALLED_NS" -o custom-columns=:metadata.name)
+	CSV_NAME=$(oc get csv -n "$CNV_INSTALLED_NS" -o custom-columns=:metadata.name | grep kubevirt-hyperconverged)
 	VIRT_OPERATOR_SEQ_NUM=$(($(oc get csv "$CSV_NAME" -o=jsonpath='{range .spec.install.spec.deployments[*]}{.name}{"\n"}{end}' | grep -n "virt-operator" | cut -f1 -d:)-1))
 	oc patch csv "${CSV_NAME}" -n "$CNV_INSTALLED_NS" --type=json -p "[{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/tolerations','value': [{'effect': 'NoSchedule','key': 'node-role.kubernetes.io/master','operator': 'Equal'}]},{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/nodeSelector','value': {'node-role.kubernetes.io/master': ''}}]"
 }

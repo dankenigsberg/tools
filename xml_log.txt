@@ -1,0 +1,117 @@
+ » oc logs -f virt-launcher-vmi-ephemeral-sbklq -c compute
+{"component":"virt-launcher","level":"info","msg":"Collected all requested hook sidecar sockets","pos":"manager.go:68","timestamp":"2020-07-23T11:17:12.316534Z"}
+{"component":"virt-launcher","level":"info","msg":"Sorted all collected sidecar sockets per hook point based on their priority and name: map[]","pos":"manager.go:71","timestamp":"2020-07-23T11:17:12.316598Z"}
+{"component":"virt-launcher","level":"info","msg":"Connecting to libvirt daemon: qemu:///system","pos":"libvirt.go:374","timestamp":"2020-07-23T11:17:12.319274Z"}
+{"component":"virt-launcher","level":"info","msg":"Connecting to libvirt daemon failed: virError(Code=38, Domain=7, Message='Failed to connect socket to '/var/run/libvirt/libvirt-sock': No such file or directory')","pos":"libvirt.go:382","timestamp":"2020-07-23T11:17:12.319637Z"}
+{"component":"virt-launcher","level":"info","msg":"libvirt version: 6.0.0, package: 16.fc31 (Unknown, 2020-04-07-15:55:55, )","subcomponent":"libvirt","thread":"47","timestamp":"2020-07-23T11:17:12.339000Z"}
+{"component":"virt-launcher","level":"info","msg":"hostname: vmi-ephemeral","subcomponent":"libvirt","thread":"47","timestamp":"2020-07-23T11:17:12.339000Z"}
+{"component":"virt-launcher","level":"error","msg":"internal error: Child process (/usr/sbin/dmidecode -q -t 0,1,2,3,4,17) unexpected exit status 1: /dev/mem: No such file or directory","pos":"virCommandWait:2709","subcomponent":"libvirt","thread":"47","timestamp":"2020-07-23T11:17:12.339000Z"}
+{"component":"virt-launcher","level":"info","msg":"Connected to libvirt daemon","pos":"libvirt.go:390","timestamp":"2020-07-23T11:17:12.821810Z"}
+{"component":"virt-launcher","level":"info","msg":"Registered libvirt event notify callback","pos":"client.go:382","timestamp":"2020-07-23T11:17:12.823774Z"}
+{"component":"virt-launcher","level":"info","msg":"Marked as ready","pos":"virt-launcher.go:72","timestamp":"2020-07-23T11:17:12.824029Z"}
+{"component":"virt-launcher","kind":"","level":"info","msg":"Executing PreStartHook on VMI pod environment","name":"vmi-ephemeral","namespace":"default","pos":"manager.go:930","timestamp":"2020-07-23T11:18:15.847729Z","uid":"c2651820-99dd-4392-8da9-7270f92f3633"}
+{"component":"virt-launcher","kind":"","level":"info","msg":"Starting PreCloudInitIso hook","name":"vmi-ephemeral","namespace":"default","pos":"manager.go:949","timestamp":"2020-07-23T11:18:15.847788Z","uid":"c2651820-99dd-4392-8da9-7270f92f3633"}
+{"component":"virt-launcher","kind":"","level":"info","msg":"bridge pod interface: VIF: { Name: eth0, IP: 10.244.1.11, Mask: ffffff00, MAC: de:56:76:6b:29:61, Gateway: 10.244.1.1, MTU: 1450, IPAMDisabled: false} \u0026{vmi:0xc00054c000 vif:0xc00012bb00 iface:0xc00036b180 virtIface:0xc0016a4300 podNicLink:\u003cnil\u003e domain:0xc000166500 podInterfaceName:eth0 bridgeInterfaceName:k6t-eth0}","name":"vmi-ephemeral","namespace":"default","pos":"podinterface.go:324","timestamp":"2020-07-23T11:18:15.848250Z","uid":"c2651820-99dd-4392-8da9-7270f92f3633"}
+{"component":"virt-launcher","level":"info","msg":"Found nameservers in /etc/resolv.conf: \n`\u0000\n","pos":"converter.go:1564","timestamp":"2020-07-23T11:18:15.848343Z"}
+{"component":"virt-launcher","level":"info","msg":"Found search domains in /etc/resolv.conf: default.svc.cluster.local svc.cluster.local cluster.local","pos":"converter.go:1565","timestamp":"2020-07-23T11:18:15.848368Z"}
+{"component":"virt-launcher","level":"info","msg":"Starting SingleClientDHCPServer","pos":"dhcp.go:64","timestamp":"2020-07-23T11:18:15.848428Z"}
+{"component":"virt-launcher","level":"info","msg":"/var/run/kubevirt/container-disks/disk_0.img backing file system does not support direct I/O","pos":"converter.go:168","timestamp":"2020-07-23T11:18:15.860129Z"}
+{"component":"virt-launcher","level":"info","msg":"Driver cache mode for /var/run/kubevirt-ephemeral-disks/disk-data/containerdisk/disk.qcow2 set to none","pos":"converter.go:187","timestamp":"2020-07-23T11:18:15.860182Z"}
+Domain XML generated.
+<domain type="kvm">
+	<name>default_vmi-ephemeral</name>
+	<metadata><kubevirt xmlns="http://kubevirt.io"><uid>c2651820-99dd-4392-8da9-7270f92f3633</uid><graceperiod><deletionGracePeriodSeconds>0</deletionGracePeriodSeconds></graceperiod></kubevirt></metadata>
+	<memory unit="B">64000000</memory>
+	<vcpu placement="static">1</vcpu>
+	<iothreads>1</iothreads>
+	<sysinfo type="smbios">
+		<bios></bios>
+		<system>
+			<entry name="uuid">eeed9b48-db0b-4b23-88ae-69e07a8cc99b</entry>
+			<entry name="manufacturer">KubeVirt</entry>
+			<entry name="family">KubeVirt</entry>
+			<entry name="product">None</entry>
+			<entry name="sku"></entry>
+			<entry name="version"></entry>
+		</system>
+		<baseBoard></baseBoard>
+		<chassis></chassis>
+	</sysinfo>
+	<os>
+		<type arch="x86_64" machine="q35">hvm</type>
+		<smbios mode="sysinfo"></smbios>
+	</os>
+	<features>
+		<acpi></acpi>
+	</features>
+	<cpu mode="host-model">
+		<topology sockets="1" cores="1" threads="1"></topology>
+	</cpu>
+	<devices>
+		<disk type="file" device="disk">
+			<driver name="qemu" type="qcow2" cache="none"></driver>
+			<source file="/var/run/kubevirt-ephemeral-disks/disk-data/containerdisk/disk.qcow2"></source>
+			<backingStore type="file">
+				<format type="qcow2"></format>
+				<source file="/var/run/kubevirt/container-disks/disk_0.img"></source>
+			</backingStore>
+			<target dev="vda" bus="virtio"></target>
+			<alias name="ua-containerdisk"></alias>
+		</disk>
+		<controller type="usb" index="0" model="none"></controller>
+		<controller type="virtio-serial" index="0"></controller>
+		<interface type="bridge">
+			<mac address="de:56:76:6b:29:61"></mac>
+			<source bridge="k6t-eth0"></source>
+			<model type="virtio"></model>
+			<mtu size="1450"></mtu>
+			<alias name="ua-default"></alias>
+		</interface>
+		<serial type="unix">
+			<source mode="bind" path="/var/run/kubevirt-private/c2651820-99dd-4392-8da9-7270f92f3633/virt-serial0"></source>
+			<target port="0"></target>
+		</serial>
+		<console type="pty">
+			<target type="serial" port="0"></target>
+		</console>
+		<channel type="unix">
+			<target type="virtio" name="org.qemu.guest_agent.0"></target>
+		</channel>
+		<graphics type="vnc">
+			<listen type="socket" socket="/var/run/kubevirt-private/c2651820-99dd-4392-8da9-7270f92f3633/virt-vnc"></listen>
+		</graphics>
+		<video>
+			<model type="vga" heads="1" vram="16384"></model>
+		</video>
+		<memballoon model="none"></memballoon>
+	</devices>
+</domain>
+{"component":"virt-launcher","kind":"","level":"info","msg":"Domain defined.","name":"vmi-ephemeral","namespace":"default","pos":"manager.go:1209","timestamp":"2020-07-23T11:18:16.175477Z","uid":"c2651820-99dd-4392-8da9-7270f92f3633"}
+{"component":"virt-launcher","level":"info","msg":"DomainLifecycle event 0 with reason 0 received","pos":"client.go:346","timestamp":"2020-07-23T11:18:16.175565Z"}
+{"component":"virt-launcher","level":"error","msg":"At least one cgroup controller is required: No such device or address","pos":"virCgroupDetect:416","subcomponent":"libvirt","thread":"35","timestamp":"2020-07-23T11:18:16.201000Z"}
+{"component":"virt-launcher","level":"info","msg":"kubevirt domain status: Shutoff(5):Unknown(0)","pos":"client.go:241","timestamp":"2020-07-23T11:18:16.203463Z"}
+{"component":"virt-launcher","level":"info","msg":"Successfully connected to domain notify socket at /var/run/kubevirt/domain-notify-pipe.sock","pos":"client.go:136","timestamp":"2020-07-23T11:18:16.205930Z"}
+{"component":"virt-launcher","level":"info","msg":"7) OSINFO IN EVENT CALLBACK: \u003cnil\u003e","pos":"client.go:263","timestamp":"2020-07-23T11:18:16.208705Z"}
+{"component":"virt-launcher","level":"info","msg":"Detected domain with UUID eeed9b48-db0b-4b23-88ae-69e07a8cc99b","pos":"virt-launcher.go:213","timestamp":"2020-07-23T11:18:16.208754Z"}
+{"component":"virt-launcher","level":"info","msg":"Monitoring loop: rate 1s start timeout 5m0s","pos":"monitor.go:164","timestamp":"2020-07-23T11:18:16.208815Z"}
+{"component":"virt-launcher","level":"info","msg":"Domain name event: default_vmi-ephemeral","pos":"client.go:322","timestamp":"2020-07-23T11:18:16.209515Z"}
+{"component":"virt-launcher","level":"info","msg":"GuestAgentLifecycle event state 2 with reason 1 received","pos":"client.go:365","timestamp":"2020-07-23T11:18:16.277700Z"}
+{"component":"virt-launcher","level":"info","msg":"kubevirt domain status: Paused(3):StartingUp(11)","pos":"client.go:241","timestamp":"2020-07-23T11:18:16.281508Z"}
+{"component":"virt-launcher","level":"info","msg":"7) OSINFO IN EVENT CALLBACK: \u003cnil\u003e","pos":"client.go:263","timestamp":"2020-07-23T11:18:16.281559Z"}
+{"component":"virt-launcher","level":"info","msg":"Domain name event: default_vmi-ephemeral","pos":"client.go:322","timestamp":"2020-07-23T11:18:16.282858Z"}
+{"component":"virt-launcher","level":"info","msg":"2020-07-23 11:18:16.196+0000: starting up libvirt version: 6.0.0, package: 16.fc31 (Unknown, 2020-04-07-15:55:55, ), qemu version: 4.2.0qemu-kvm-4.2.0-27.fc31, kernel: 3.10.0-1062.9.1.el7.x86_64, hostname: vmi-ephemeral","subcomponent":"qemu","timestamp":"2020-07-23T11:18:16.333830Z"}
+{"component":"virt-launcher","level":"info","msg":"LC_ALL=C \\PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \\HOME=/var/lib/libvirt/qemu/domain-1-default_vmi-ephemera \\XDG_DATA_HOME=/var/lib/libvirt/qemu/domain-1-default_vmi-ephemera/.local/share \\XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain-1-default_vmi-ephemera/.cache \\XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain-1-default_vmi-ephemera/.config \\QEMU_AUDIO_DRV=none \\/usr/libexec/qemu-kvm \\-name guest=default_vmi-ephemeral,debug-threads=on \\-S \\-object secret,id=masterKey0,format=raw,file=/var/lib/libvirt/qemu/domain-1-default_vmi-ephemera/master-key.aes \\-machine pc-q35-rhel8.2.0,accel=kvm,usb=off,dump-guest-core=off \\-cpu Skylake-Client-IBRS,ss=on,hypervisor=on,tsc-adjust=on,clflushopt=on,umip=on,md-clear=on,stibp=on,ssbd=on,pdpe1gb=on \\-m 62 \\-overcommit mem-lock=off \\-smp 1,sockets=1,dies=1,cores=1,threads=1 \\-object iothread,id=iothread1 \\-uuid eeed9b48-db0b-4b23-88ae-69e07a8cc99b \\-smbios type=1,manufacturer=KubeVirt,product=None,uuid=eeed9b48-db0b-4b23-88ae-69e07a8cc99b,family=KubeVirt \\-no-user-config \\-nodefaults \\-chardev socket,id=charmonitor,fd=21,server,nowait \\-mon chardev=charmonitor,id=monitor,mode=control \\-rtc base=utc \\-no-shutdown \\-boot strict=on \\-device pcie-root-port,port=0x10,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x2 \\-device pcie-root-port,port=0x11,chassis=2,id=pci.2,bus=pcie.0,addr=0x2.0x1 \\-device pcie-root-port,port=0x12,chassis=3,id=pci.3,bus=pcie.0,addr=0x2.0x2 \\-device pcie-root-port,port=0x13,chassis=4,id=pci.4,bus=pcie.0,addr=0x2.0x3 \\-device virtio-serial-pci,id=virtio-serial0,bus=pci.2,addr=0x0 \\-blockdev '{\"driver\":\"file\",\"filename\":\"/var/run/kubevirt/container-disks/disk_0.img\",\"node-name\":\"libvirt-2-storage\",\"cache\":{\"direct\":true,\"no-flush\":false},\"auto-read-only\":true,\"discard\":\"unmap\"}' \\-blockdev '{\"node-name\":\"libvirt-2-format\",\"read-only\":true,\"cache\":{\"direct\":true,\"no-flush\":false},\"driver\":\"qcow2\",\"file\":\"libvirt-2-storage\",\"backing\":null}' \\-blockdev '{\"driver\":\"file\",\"filename\":\"/var/run/kubevirt-ephemeral-disks/disk-data/containerdisk/disk.qcow2\",\"node-name\":\"libvirt-1-storage\",\"cache\":{\"direct\":true,\"no-flush\":false},\"auto-read-only\":true,\"discard\":\"unmap\"}' \\-blockdev '{\"node-name\":\"libvirt-1-format\",\"read-only\":false,\"cache\":{\"direct\":true,\"no-flush\":false},\"driver\":\"qcow2\",\"file\":\"libvirt-1-storage\",\"backing\":\"libvirt-2-format\"}' \\-device virtio-blk-pci,scsi=off,bus=pci.3,addr=0x0,drive=libvirt-1-format,id=ua-containerdisk,bootindex=1,write-cache=on \\-netdev tap,fd=23,id=hostua-default,vhost=on,vhostfd=24 \\-device virtio-net-pci,host_mtu=1450,netdev=hostua-default,id=ua-default,mac=de:56:76:6b:29:61,bus=pci.1,addr=0x0 \\-chardev socket,id=charserial0,fd=25,server,nowait \\-device isa-serial,chardev=charserial0,id=serial0 \\-chardev socket,id=charchannel0,fd=26,server,nowait \\-device virtserialport,bus=virtio-serial0.0,nr=1,chardev=charchannel0,id=channel0,name=org.qemu.guest_agent.0 \\-vnc vnc=unix:/var/run/kubevirt-private/c2651820-99dd-4392-8da9-7270f92f3633/virt-vnc \\-device VGA,id=video0,vgamem_mb=16,bus=pcie.0,addr=0x1 \\-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \\-msg timestamp=on","subcomponent":"qemu","timestamp":"2020-07-23T11:18:16.333957Z"}
+{"component":"virt-launcher","level":"info","msg":"DomainLifecycle event 4 with reason 0 received","pos":"client.go:346","timestamp":"2020-07-23T11:18:16.851827Z"}
+{"component":"virt-launcher","level":"info","msg":"DomainLifecycle event 2 with reason 0 received","pos":"client.go:346","timestamp":"2020-07-23T11:18:16.852418Z"}
+{"component":"virt-launcher","kind":"","level":"info","msg":"Domain started.","name":"vmi-ephemeral","namespace":"default","pos":"manager.go:1244","timestamp":"2020-07-23T11:18:16.857485Z","uid":"c2651820-99dd-4392-8da9-7270f92f3633"}
+{"component":"virt-launcher","kind":"","level":"info","msg":"Synced vmi","name":"vmi-ephemeral","namespace":"default","pos":"server.go:167","timestamp":"2020-07-23T11:18:16.858595Z","uid":"c2651820-99dd-4392-8da9-7270f92f3633"}
+{"component":"virt-launcher","level":"info","msg":"kubevirt domain status: Running(1):Unknown(1)","pos":"client.go:241","timestamp":"2020-07-23T11:18:16.861199Z"}
+{"component":"virt-launcher","level":"info","msg":"7) OSINFO IN EVENT CALLBACK: \u003cnil\u003e","pos":"client.go:263","timestamp":"2020-07-23T11:18:16.861279Z"}
+{"component":"virt-launcher","level":"info","msg":"Domain name event: default_vmi-ephemeral","pos":"client.go:322","timestamp":"2020-07-23T11:18:16.862788Z"}
+{"component":"virt-launcher","level":"info","msg":"kubevirt domain status: Running(1):Unknown(1)","pos":"client.go:241","timestamp":"2020-07-23T11:18:16.868692Z"}
+{"component":"virt-launcher","level":"info","msg":"7) OSINFO IN EVENT CALLBACK: \u003cnil\u003e","pos":"client.go:263","timestamp":"2020-07-23T11:18:16.868768Z"}
+{"component":"virt-launcher","level":"info","msg":"Domain name event: default_vmi-ephemeral","pos":"client.go:322","timestamp":"2020-07-23T11:18:16.870726Z"}
+{"component":"virt-launcher","kind":"","level":"info","msg":"Synced vmi","name":"vmi-ephemeral","namespace":"default","pos":"server.go:167","timestamp":"2020-07-23T11:18:16.899127Z","uid":"c2651820-99dd-4392-8da9-7270f92f3633"}
+{"component":"virt-launcher","kind":"","level":"info","msg":"Synced vmi","name":"vmi-ephemeral","namespace":"default","pos":"server.go:167","timestamp":"2020-07-23T11:18:16.911367Z","uid":"c2651820-99dd-4392-8da9-7270f92f3633"}
+{"component":"virt-launcher","level":"info","msg":"Found PID for eeed9b48-db0b-4b23-88ae-69e07a8cc99b: 85","pos":"monitor.go:133","timestamp":"2020-07-23T11:18:17.213813Z"}
+

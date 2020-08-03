@@ -6,6 +6,14 @@ CNV_INSTALLED_NS=${CNV_INSTALLED_NS:-openshift-cnv}
 
 log() { echo "$@" >&2; }
 
+oc_patch_csv() {
+	local OPERATOR_NAME="$1"
+	local CSV_NAME="$2"
+	log "Patching CNV Cluster Service Version for $OPERATOR_NAME deployment"
+	VIRT_OPERATOR_SEQ_NUM=$(($(oc get csv "$CSV_NAME" -n "$CNV_INSTALLED_NS" -o=jsonpath='{range .spec.install.spec.deployments[*]}{.name}{"\n"}{end}' | grep -n "$OPERATOR_NAME" | cut -f1 -d:)-1))
+	oc patch csv "${CSV_NAME}" -n "$CNV_INSTALLED_NS" --type=json -p "[{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/tolerations','value': [{'effect': 'NoSchedule','key': 'node-role.kubernetes.io/master','operator': 'Equal'}]},{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/nodeSelector','value': {'node-role.kubernetes.io/master': ''}}]"
+}
+
 patch_kubevirt_deployments() {
 	log "Patching Kubevirt deployments"
 	local YAML_FILE
@@ -26,6 +34,28 @@ EOF
 	done
 }
 
+patch_cdi_deployments() {
+	log "Patching CDI deployments"
+	local YAML_FILE
+	YAML_FILE=$(mktemp -p /tmp -t cdi_patch.XXX)
+	cat << EOF > "$YAML_FILE"
+spec:
+  template:
+    spec:
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Equal
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+EOF
+	oc scale deployment cdi-operator -n "$CNV_INSTALLED_NS" --replicas=0
+	for dpl in cdi-apiserver cdi-uploadproxy cdi-deployment; do
+		oc patch deployment $dpl -n "$CNV_INSTALLED_NS" --patch "$(cat "$YAML_FILE")"
+	done
+	oc scale deployment cdi-operator -n "$CNV_INSTALLED_NS" --replicas=1
+}
+
 patch_kubevirt_ds() {
 	log "Patching Kubevirt DaemonSets"
 	local YAML_FILE
@@ -41,29 +71,66 @@ EOF
 }
 
 patch_cluster_service_version() {
-	log "Patching CNV Cluster Service Version for virt-operator deployment"
 	local CSV_NAME
 	local VIRT_OPERATOR_SEQ_NUM
 	CSV_NAME=$(oc get csv -n "$CNV_INSTALLED_NS" -o custom-columns=:metadata.name | grep kubevirt-hyperconverged)
-	VIRT_OPERATOR_SEQ_NUM=$(($(oc get csv "$CSV_NAME" -n "$CNV_INSTALLED_NS" -o=jsonpath='{range .spec.install.spec.deployments[*]}{.name}{"\n"}{end}' | grep -n "virt-operator" | cut -f1 -d:)-1))
-	oc patch csv "${CSV_NAME}" -n "$CNV_INSTALLED_NS" --type=json -p "[{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/tolerations','value': [{'effect': 'NoSchedule','key': 'node-role.kubernetes.io/master','operator': 'Equal'}]},{'op': 'add','path': '/spec/install/spec/deployments/$VIRT_OPERATOR_SEQ_NUM/spec/template/spec/nodeSelector','value': {'node-role.kubernetes.io/master': ''}}]"
+	for operator in virt-operator kubevirt-ssp-operator cluster-network-addons-operator cdi-operator hostpath-provisioner-operator hco-operator vm-import-operator; do
+		oc_patch_csv $operator $CSV_NAME
+	done	
 }
 
 patch_ssp_deployments() {
-	log "Patching SSP node labeller Daemonset"
-	local namespace_labeller
-	local namespace_ssp_operator
-	namespace_labeller=$(oc get ds --all-namespaces | grep node-labeller | cut -d" " -f1)
-	namespace_ssp_operator=$(oc get deployments --all-namespaces | grep kubevirt-ssp-operator | cut -d" " -f1)
-	oc scale deployment kubevirt-ssp-operator -n "$namespace_ssp_operator" --replicas=0
-	oc patch ds kubevirt-node-labeller -n "$namespace_labeller" --type json -p='[{"op": "add", "path": "/spec/template/spec/nodeSelector", "value": {"node-role.kubernetes.io/worker": ""}}]'
+	log "Patching SSP components"
+	
+	local YAML_FILE
+	YAML_FILE=$(mktemp -p /tmp -t ssp_patch.XXX)
+	cat << EOF > "$YAML_FILE"
+spec:
+  template:
+    spec:
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Equal
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+EOF
+	oc scale deployment kubevirt-ssp-operator -n "$CNV_INSTALLED_NS" --replicas=0
+	oc patch deployment virt-template-validator -n "$CNV_INSTALLED_NS" --patch "$(cat "$YAML_FILE")"
+	oc patch ds kubevirt-node-labeller -n "$CNV_INSTALLED_NS" --type json -p='[{"op": "add", "path": "/spec/template/spec/nodeSelector", "value": {"node-role.kubernetes.io/worker": ""}}]'
+	oc scale deployment kubevirt-ssp-operator -n "$CNV_INSTALLED_NS" --replicas=1
+}
+
+patch_v2v_deployments() {
+	log "Patching V2V deployments"
+	local YAML_FILE
+	YAML_FILE=$(mktemp -p /tmp -t v2v_patch.XXX)
+	cat << EOF > "$YAML_FILE"
+spec:
+  template:
+    spec:
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Equal
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+EOF
+	
+	oc scale deployment vm-import-operator -n "$CNV_INSTALLED_NS" --replicas=0
+	for dpl in vm-import-controller; do
+		oc patch deployment $dpl -n "$CNV_INSTALLED_NS" --patch "$(cat "$YAML_FILE")"
+	done
+	oc scale deployment vm-import-operator -n "$CNV_INSTALLED_NS" --replicas=1
 }
 
 main() {
-	patch_kubevirt_deployments 
-	patch_kubevirt_ds
+#	patch_kubevirt_deployments 
+#	patch_kubevirt_ds
 	patch_cluster_service_version
 	patch_ssp_deployments
+#	patch_cdi_deployments
+	patch_v2v_deployments
 }
 
 if [ -z "$(which oc)" ]; then

@@ -70,13 +70,14 @@ spec:
         $WORKER_LABEL: ""
 EOF
 	oc patch ds virt-handler -n "$CNV_INSTALLED_NS" --patch "$(cat "$YAML_FILE")"
+        oc patch ds virt-handler -n openshift-cnv --type merge --patch '{"spec":{"template":{"spec":{"tolerations":[{"key":"worker","operator":"Equal","value":"load-balancer"}]}}}}'
 }
 
 patch_cluster_service_version() {
 	local CSV_NAME
 	local VIRT_OPERATOR_SEQ_NUM
 	CSV_NAME=$(oc get csv -n "$CNV_INSTALLED_NS" -o custom-columns=:metadata.name | grep kubevirt-hyperconverged)
-	for operator in virt-operator kubevirt-ssp-operator cluster-network-addons-operator cdi-operator hostpath-provisioner-operator hco-operator vm-import-operator; do
+	for operator in virt-operator kubevirt-ssp-operator cluster-network-addons-operator cdi-operator hostpath-provisioner-operator hco-operator; do
 		oc_patch_csv $operator $CSV_NAME
 	done	
 }
@@ -99,7 +100,7 @@ spec:
 EOF
 	oc scale deployment kubevirt-ssp-operator -n "$CNV_INSTALLED_NS" --replicas=0
 	oc patch deployment virt-template-validator -n "$CNV_INSTALLED_NS" --patch "$(cat "$YAML_FILE")"
-	oc patch ds kubevirt-node-labeller -n "$CNV_INSTALLED_NS" --type json -p='[{"op": "add", "path": "/spec/template/spec/nodeSelector", "value": {"$WORKER_LABEL": ""}}]'
+	oc patch ds kubevirt-node-labeller -n "$CNV_INSTALLED_NS" --type json -p='[{"op": "add", "path": "/spec/template/spec/nodeSelector", "value": {'$WORKER_LABEL': ""}}]'
 	oc scale deployment kubevirt-ssp-operator -n "$CNV_INSTALLED_NS" --replicas=1
 }
 
@@ -127,12 +128,12 @@ EOF
 }
 
 main() {
-#	patch_kubevirt_deployments 
-#	patch_kubevirt_ds
+	patch_kubevirt_deployments 
+	patch_kubevirt_ds
 	patch_cluster_service_version
 	patch_ssp_deployments
-#	patch_cdi_deployments
-	patch_v2v_deployments
+	patch_cdi_deployments
+#	patch_v2v_deployments
 }
 
 if [ -z "$(which oc)" ]; then
